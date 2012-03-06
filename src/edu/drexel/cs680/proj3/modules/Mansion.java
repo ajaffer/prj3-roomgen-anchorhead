@@ -8,7 +8,7 @@ import edu.drexel.cs680.proj3.util.ImageUtil;
 
 public class Mansion {
 
-	public static final int MAX_ROOMS = 50;
+	public static final int MAX_ROOMS = 5;
 	public static final int WIDTH = 500;
 	public static final int HEIGHT = 500;
 	

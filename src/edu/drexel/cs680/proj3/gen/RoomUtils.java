@@ -76,8 +76,11 @@ public class RoomUtils {
 		int move_left = Math.abs(collidingRoom.getRightEdge() - targetRoom.getLeftEdge());
 		int move_x = move_right > move_left ? -(move_left) : move_right;
 		
-		collidingRoom.center_x = collidingRoom.center_x + move_x;
-		collidingRoom.center_y = collidingRoom.center_y + move_y;
+		if (new Random().nextBoolean()) {
+			collidingRoom.center_x = collidingRoom.center_x + move_x;
+		}else {
+			collidingRoom.center_y = collidingRoom.center_y + move_y;
+		}
 	}
 	
 	private static List<Room> getCollidingRooms(List<Room> rooms, Room targetRoom) {
@@ -159,8 +162,8 @@ public class RoomUtils {
 	private static Room createRandomRoom(int maxx, int maxy) {
 		Random random = new Random();
 		
-		int random_width = random.nextInt(maxx/5);
-		int random_height = random.nextInt(maxy/5);
+		int random_width = maxx/10 + random.nextInt(maxx/5);
+		int random_height = maxy/10 + random.nextInt(maxy/5);
 		int random_center_x = maxx/2 + random.nextInt(maxx/5);
 		int random_center_y = maxy/2 + random.nextInt(maxy/5);
 		String random_name = RoomNames.values()[random.nextInt(RoomNames.values().length)].toString();
