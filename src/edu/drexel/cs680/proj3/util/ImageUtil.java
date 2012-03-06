@@ -6,9 +6,35 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import edu.drexel.cs680.proj3.modules.Mansion;
+import edu.drexel.cs680.proj3.modules.Room;
+
 public class ImageUtil {
+	private static final String FOLDER = new File(".").getAbsolutePath();
 	
-	private static final String FOLDER = "C:\\Documents and Settings\\Owner\\My Documents\\proj2\\GraphicIFEngine_CS680\\graphics";
+	public static void drawMansion(Mansion mansion) throws IOException {
+		File roomFile = new File(String.format("%s\\graphics\\mansion\\livingroom.png", FOLDER));
+		BufferedImage roomImage = ImageIO.read(roomFile);
+		
+		BufferedImage mansionImage = new BufferedImage (
+				mansion.width,
+				mansion.height,
+				BufferedImage.TYPE_INT_RGB);
+		
+		for (Room room : mansion.rooms) {
+			boolean image1Drawn = mansionImage.createGraphics().drawImage(roomImage, room.getLeftEdge(), room.getTopEdge(), room.width, room.height, null);
+			if(!image1Drawn) System.out.println("Problems drawing room " + room.name); 
+		}
+		
+		  File mansionFile = new File(String.format("%s\\graphics\\mansion\\output\\mansion.jpg", FOLDER));
+		  boolean mansionImageDrawn = ImageIO.write(mansionImage, "jpeg", mansionFile);
+		  if(!mansionImageDrawn) {
+			  System.out.println("Problems drawing Mansion Image");
+		  }else {
+			  System.out.println("Successfull");
+		  }
+
+	}
 
 	public static void main(String[] args) throws IOException, Exception {
 		  File livingroomFile = new File(String.format("%s\\mansion\\livingroom.png", FOLDER));

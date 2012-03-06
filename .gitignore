@@ -2,3 +2,4 @@ IF-log*.txt
 *.class
 bin/
 .DS_STORE
+Thumbs.db
