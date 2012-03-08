@@ -1,13 +1,15 @@
 package edu.drexel.cs680.proj3.modules;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Room {
 	public int center_x, center_y, width, height;
 	public int moveCounter = 0;
 	public String name;
-	List<Room> neighbors;
-	List<Door> doors;
+	public List<Room> neighbors;
+	public List<Door> doors;
+	public List<Room> processedNeighbors;
 	private static int ctr;
 	public int id;
 	
@@ -18,6 +20,7 @@ public class Room {
 		this.height = height;
 		this.name = name;
 		id = ctr++;
+		processedNeighbors = new ArrayList<Room>();
 	}
 	
 	public boolean collides(Room other) {
@@ -34,6 +37,33 @@ public class Room {
 		collision_y = collision_y || (b.getBottomEdge() > a.getTopEdge() && b.getBottomEdge() <= a.getBottomEdge());
 		boolean collision = collision_x && collision_y;
 		return collision;
+	}
+	
+	private static final int DELTA = 1;
+	public boolean isNeighbor(Room other) {
+		boolean neighbor = false;
+		neighbor = isLeftNeighbor(other);
+		neighbor = neighbor || isRightNeighbor(other);
+		neighbor = neighbor || isTopNeighbor(other);
+		neighbor = neighbor || isBottomNeighbor(other);
+		
+		return neighbor;
+	}
+	
+	public boolean isLeftNeighbor(Room other) {
+		return Math.abs(other.getLeftEdge() - getRightEdge()) <= DELTA;
+	}
+	
+	public boolean isRightNeighbor(Room other) {
+		return Math.abs(other.getRightEdge() - getLeftEdge()) <= DELTA;
+	}
+	
+	public boolean isBottomNeighbor(Room other) {
+		return Math.abs(other.getBottomEdge() - getTopEdge()) <= DELTA;
+	}
+	
+	public boolean isTopNeighbor(Room other) {
+		return Math.abs(other.getTopEdge() - getBottomEdge()) <= DELTA;
 	}
 
 	public int getLeftEdge() {
@@ -56,9 +86,6 @@ public class Room {
 		return rightEdge;
 	}
 
-	public class Door {
-		int x, y;
-	}
 	
 	public boolean equals(Object o) {
 		if (!(o instanceof Room)){
@@ -75,7 +102,15 @@ public class Room {
 		return isEqual;
 	}
 	
+	public int hashCode() {
+		int hash = 5;
+		hash = 89 * hash + this.name.hashCode();
+		hash = 89 * hash + this.center_x;
+		hash = 89 * hash + this.center_y;
+		return hash;
+	}
+	
 	public String toString() {
-		return String.format("%s %d/%d", name, center_x, center_y);
+		return String.format("%s [%d/%d]", name, neighbors.size(), doors.size());
 	}
 }

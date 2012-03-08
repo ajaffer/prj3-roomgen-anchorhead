@@ -1,11 +1,10 @@
 package edu.drexel.cs680.proj3.gen;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
+import edu.drexel.cs680.proj3.modules.Door;
 import edu.drexel.cs680.proj3.modules.Room;
 
 public class RoomUtils {
@@ -31,6 +30,79 @@ public class RoomUtils {
 		}
 		
 		return randomRooms;
+	}
+	
+	public static void setNeighbors(List<Room> rooms) {
+		for (Room room : rooms) {
+			List<Room> neighbors = getNeighbors(rooms, room);
+			room.neighbors = neighbors;
+		}
+	}
+	
+	private static List<Room> getNeighbors(List<Room> rooms, Room targetRoom) {
+		List<Room> neighbors = new ArrayList<Room>();
+		for (Room room : rooms) {
+			if (targetRoom.isNeighbor(room)){
+				neighbors.add(room);
+			}
+		}
+		
+		return neighbors;
+	}
+	
+	public static void setDoors(List<Room> rooms) {
+		for (Room room : rooms) {
+			setDoors(room);
+		}
+	}
+	
+	private static void setDoors(Room room) {
+		List<Door> doors = new ArrayList<Door>();
+		for (Room neighbor : room.neighbors) {
+			if (!(neighbor.processedNeighbors.contains(room))){
+				Door door = getDoor(room, neighbor);
+				doors.add(door);
+				room.processedNeighbors.add(neighbor);
+			}
+		}
+		room.doors = doors;
+	}
+	
+	private static Door getDoor(Room a, Room b) {
+		int x=0, y=0;
+
+		if (a.isTopNeighbor(b)) {
+			y = a.getBottomEdge();
+		}
+		
+		if (a.isBottomNeighbor(b)) {
+			y = a.getTopEdge();
+		}
+		
+		if (a.isTopNeighbor(b) || a.isBottomNeighbor(b)) {
+			int leftEdge = Math.max(a.getLeftEdge(), b.getLeftEdge());
+			int rightEdge = Math.min(a.getRightEdge(), b.getRightEdge());
+			
+			x = leftEdge + (rightEdge - leftEdge) / 2;
+		}
+		
+		if (a.isLeftNeighbor(b)) {
+			x = a.getRightEdge();
+		}
+		
+		if (a.isRightNeighbor(b)) {
+			x = a.getLeftEdge();
+		}
+
+		if (a.isLeftNeighbor(b) || a.isRightNeighbor(b)) {
+			int topEdge = Math.max(a.getTopEdge(), b.getTopEdge());
+			int bottomEdge = Math.min(a.getBottomEdge(), b.getBottomEdge());
+			
+			y = topEdge + (bottomEdge - topEdge) / 2;
+		}
+		
+		Door door = new Door(x, y);
+		return door;
 	}
 	
 //	public static void moveRoomsClose(List<Room> rooms) {

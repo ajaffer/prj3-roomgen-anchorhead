@@ -18,8 +18,11 @@ public class Mansion {
 	public Mansion() {
 		rooms = RoomUtils.getRandomRooms(MAX_ROOMS, WIDTH, HEIGHT);
 		rooms = RoomUtils.moveRoomsApart(rooms);
-//		rooms = RoomUtils.filterCollidingRooms(rooms);
+		rooms = RoomUtils.filterCollidingRooms(rooms);
 //		RoomUtils.moveRoomsClose(rooms);
+		RoomUtils.setNeighbors(rooms);
+		RoomUtils.setDoors(rooms);
+		
 		
 //		setMansionWidthHeight();
 	}
