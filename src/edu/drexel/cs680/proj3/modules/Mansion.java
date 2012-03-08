@@ -8,7 +8,7 @@ import edu.drexel.cs680.proj3.util.ImageUtil;
 
 public class Mansion {
 
-	public static final int MAX_ROOMS = 20;
+	public static final int MAX_ROOMS = 7;
 	public static final int WIDTH = 500;
 	public static final int HEIGHT = 500;
 	
@@ -18,7 +18,7 @@ public class Mansion {
 	public Mansion() {
 		rooms = RoomUtils.getRandomRooms(MAX_ROOMS, WIDTH, HEIGHT);
 		rooms = RoomUtils.moveRoomsApart(rooms);
-		rooms = RoomUtils.filterCollidingRooms(rooms);
+//		rooms = RoomUtils.filterCollidingRooms(rooms);
 //		RoomUtils.moveRoomsClose(rooms);
 		
 //		setMansionWidthHeight();

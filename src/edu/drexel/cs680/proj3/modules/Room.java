@@ -21,15 +21,19 @@ public class Room {
 	}
 	
 	public boolean collides(Room other) {
+		return collision(this, other) || collision(other, this);
+	}
+	
+	private boolean collision(Room a, Room b) {
 		boolean collision_x = false, collision_y = false;
 		
-		collision_x = (other.getLeftEdge() >= getLeftEdge() && other.getLeftEdge() < getRightEdge());
-		collision_x = collision_x || (other.getRightEdge() > getLeftEdge() && other.getRightEdge() <= getRightEdge());
+		collision_x = (b.getLeftEdge() >= a.getLeftEdge() && b.getLeftEdge() < a.getRightEdge());
+		collision_x = collision_x || (b.getRightEdge() > a.getLeftEdge() && b.getRightEdge() <= a.getRightEdge());
 		
-		collision_y = (other.getTopEdge() >= getTopEdge() && other.getTopEdge() < getBottomEdge());
-		collision_y = collision_y || (other.getBottomEdge() > getTopEdge() && other.getBottomEdge() <= getBottomEdge());
-		
-		return collision_x && collision_y;
+		collision_y = (b.getTopEdge() >= a.getTopEdge() && b.getTopEdge() < a.getBottomEdge());
+		collision_y = collision_y || (b.getBottomEdge() > a.getTopEdge() && b.getBottomEdge() <= a.getBottomEdge());
+		boolean collision = collision_x && collision_y;
+		return collision;
 	}
 
 	public int getLeftEdge() {
