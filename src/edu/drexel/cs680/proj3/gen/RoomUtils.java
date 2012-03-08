@@ -1,8 +1,10 @@
 package edu.drexel.cs680.proj3.gen;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import edu.drexel.cs680.proj3.modules.Room;
 
@@ -39,7 +41,14 @@ public class RoomUtils {
 //		}
 //	}
 	
-	public static void moveRoomsApart(List<Room> rooms) {
+	public static List<Room> moveRoomsApart(List<Room> rooms) {
+		List<Room> arrangedRooms = new ArrayList<Room>(rooms.size());
+
+		for (Room room : rooms) {
+			addAndSortOutCollissions(arrangedRooms, room);
+		}
+		
+		/*
 //		Room centerRoom = getCenterRoom(rooms);
 //		moveCollidingRoomApart(centerRoom, rooms);	
 		for (Room room : rooms){
@@ -49,6 +58,63 @@ public class RoomUtils {
 				moveCollidingRooms(collidingRooms, currentRoom);
 			}
 		}
+		*/
+		
+		return arrangedRooms;
+	}
+	
+	public static List<Room> filterCollidingRooms(List<Room> rooms) {
+		List<Room> filteredRooms = new ArrayList<Room>(rooms.size());
+		
+		for (Room room : rooms) {
+			if (noOfCollisions(rooms, room) == 0) {
+				filteredRooms.add(room);
+			}
+		}
+		
+		return filteredRooms;
+	}
+	
+	public static int noOfCollisions(List<Room> rooms, Room currentRoom) {
+		int collisions = 0;
+		for (Room room : rooms) {
+			if (!room.equals(currentRoom) && room.collides(currentRoom)) {
+				collisions++;
+			}
+		}
+		
+		return collisions;
+	}
+	
+	private static void addAndSortOutCollissions(List<Room> arrangedRooms, Room newRoom) {
+		int counter = 0;
+		while (roomCollides(arrangedRooms, newRoom) && ++counter < 500) {
+			for (Room targetRoom : arrangedRooms) {
+				if (targetRoom.collides(newRoom)) {
+					moveCollidingRoom(newRoom, targetRoom);
+					if (targetRoom.collides(newRoom)) { 
+						System.err.println("uncollide didn't work! for " + newRoom);
+					}
+				}
+			}
+		}
+		
+		if (roomCollides(arrangedRooms, newRoom)) {
+			System.err.println("oops couldn't find an arrangment for room: " + newRoom.name);
+		} else {
+			System.out.println("counter: "+counter);
+			arrangedRooms.add(newRoom);
+		}
+		
+	}
+	
+	private static boolean roomCollides(List<Room> arrangedRooms, Room newRoom) {
+		for (Room arrangedRoom : arrangedRooms) {
+			if (arrangedRoom.collides(newRoom)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/*
@@ -72,7 +138,7 @@ public class RoomUtils {
 		int move_down = Math.abs(targetRoom.getBottomEdge() - collidingRoom.getTopEdge());
 		int move_y = move_up < move_down ? -(move_up) : move_down; 
 
-		int move_right = Math.abs(targetRoom.getLeftEdge() - collidingRoom.getLeftEdge());
+		int move_right = Math.abs(targetRoom.getRightEdge() - collidingRoom.getLeftEdge());
 		int move_left = Math.abs(collidingRoom.getRightEdge() - targetRoom.getLeftEdge());
 		int move_x = move_right > move_left ? -(move_left) : move_right;
 		
@@ -81,6 +147,8 @@ public class RoomUtils {
 		}else {
 			collidingRoom.center_y = collidingRoom.center_y + move_y;
 		}
+		
+		collidingRoom.moveCounter++;
 	}
 	
 	private static List<Room> getCollidingRooms(List<Room> rooms, Room targetRoom) {
