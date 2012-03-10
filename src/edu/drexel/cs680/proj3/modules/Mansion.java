@@ -47,7 +47,7 @@ public class Mansion {
 		String FOLDER = new File(".").getAbsolutePath();
 		try{
 			// Create file 
-			FileWriter fstream = new FileWriter(String.format("%s\\graphics\\mansion\\out.xml", FOLDER));
+			FileWriter fstream = new FileWriter(String.format("%s\\graphics\\mansion\\output\\out.xml", FOLDER));
 			BufferedWriter out = new BufferedWriter(fstream);
 			out.write(XML);
 			out.close();
