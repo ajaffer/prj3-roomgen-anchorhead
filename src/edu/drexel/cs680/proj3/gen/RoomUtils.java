@@ -1,10 +1,13 @@
 package edu.drexel.cs680.proj3.gen;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import edu.drexel.cs680.proj3.modules.Door;
+import edu.drexel.cs680.proj3.modules.Mansion;
 import edu.drexel.cs680.proj3.modules.Room;
 
 public class RoomUtils {
@@ -34,39 +37,103 @@ public class RoomUtils {
 	
 	public static void setNeighbors(List<Room> rooms) {
 		for (Room room : rooms) {
-			List<Room> neighbors = getNeighbors(rooms, room);
+			Map<Room, Door> neighbors = getNeighbors(rooms, room);
 			room.neighbors = neighbors;
 		}
 	}
 	
-	private static List<Room> getNeighbors(List<Room> rooms, Room targetRoom) {
-		List<Room> neighbors = new ArrayList<Room>();
+	public static void removeUngroupedRooms(List<Room> rooms) {
 		for (Room room : rooms) {
-			if (targetRoom.isNeighbor(room)){
-				neighbors.add(room);
+			if (room.neighbors.isEmpty()) {
+				rooms.remove(room);
+			}
+		}
+	}
+	
+	private static Map<Room, Door> getNeighbors(List<Room> rooms, Room targetRoom) {
+		Map<Room, Door> neighbors = new HashMap<Room, Door>();
+		for (Room room : rooms) {
+			if (room == targetRoom) {
+				continue;
+			}
+			
+			if (room.isNeighbor(targetRoom)){
+				Door door = getDoor(room, targetRoom);
+				neighbors.put(room, door);
+				
+				room.neighbors.put(targetRoom, door);
 			}
 		}
 		
 		return neighbors;
 	}
 	
-	public static void setDoors(List<Room> rooms) {
+//	public static void setDoors(List<Room> rooms) {
+//		for (Room room : rooms) {
+//			setDoors(room);
+//		}
+//	}
+	
+//	private static void setDoors(Room room) {
+//		List<Door> doors = new ArrayList<Door>();
+//		for (Room neighbor : room.neighbors) {
+//			if (!(neighbor.processedNeighbors.contains(room))){
+//				Door door = getDoor(room, neighbor);
+//				doors.add(door);
+//				room.processedNeighbors.add(neighbor);
+//			}
+//		}
+//		room.doors = doors;
+//	}
+	
+	
+	public static void setPoints(List<Room> rooms) {
 		for (Room room : rooms) {
-			setDoors(room);
+			setPoints(room);
 		}
 	}
 	
-	private static void setDoors(Room room) {
-		List<Door> doors = new ArrayList<Door>();
-		for (Room neighbor : room.neighbors) {
-			if (!(neighbor.processedNeighbors.contains(room))){
-				Door door = getDoor(room, neighbor);
-				doors.add(door);
-				room.processedNeighbors.add(neighbor);
+	private static void setPoints(Room room) {
+		Room.Point[][] pointsMatrix = getPointsMatrix(room);
+		for (int x = 0; x < pointsMatrix.length; x++) {
+			for (int y = 0; y < pointsMatrix[x].length; y++) {
+				Room.Point point = pointsMatrix[x][y];
+				if (pointsMatrix.length == 0 || pointsMatrix[0].length == 0) {
+					continue;
+				}
+				if (y-1 > 0) {
+					Room.Point top = pointsMatrix[x][y-1];
+					point.links.add(top);
+				}
+				if (x-1 > 0) {
+					Room.Point left = pointsMatrix[x-1][y];
+					point.links.add(left);
+				}
+				if (y+1 < pointsMatrix[0].length) {
+					Room.Point bottom = pointsMatrix[x][y+1];
+					point.links.add(bottom);
+				}
+				if (x+1 < pointsMatrix.length) {
+					Room.Point right = pointsMatrix[x+1][y];
+					point.links.add(right);
+				}
+				
+				room.points.add(point);
 			}
 		}
-		room.doors = doors;
 	}
+	
+	private static Room.Point[][] getPointsMatrix(Room room) {
+		int id = 1;
+		Room.Point[][] points = new Room.Point[room.getRightEdge()-room.getLeftEdge()+1][room.getBottomEdge()-room.getTopEdge()+1];
+		for (int x = room.getLeftEdge(); x <= room.getRightEdge() ; x++) {
+			for (int y = room.getTopEdge(); y <= room.getBottomEdge(); y++) {
+				points[x-room.getLeftEdge()][y-room.getTopEdge()] = room.new Point(id++, x, y);
+			}
+		}
+		return points;
+	}
+	
 	
 	private static Door getDoor(Room a, Room b) {
 		int x=0, y=0;
@@ -165,12 +232,13 @@ public class RoomUtils {
 				if (targetRoom.collides(newRoom)) {
 					moveCollidingRoom(newRoom, targetRoom);
 					if (targetRoom.collides(newRoom)) { 
-						System.err.println("uncollide didn't work! for " + newRoom);
+//						System.err.println("uncollide didn't work! for " + newRoom);
 					}
 				}
 			}
 		}
 		
+//		arrangedRooms.add(newRoom);
 		if (roomCollides(arrangedRooms, newRoom)) {
 			System.err.println("oops couldn't find an arrangment for room: " + newRoom.name);
 		} else {
@@ -302,10 +370,10 @@ public class RoomUtils {
 	private static Room createRandomRoom(int maxx, int maxy) {
 		Random random = new Random();
 		
-		int random_width = maxx/10 + random.nextInt(maxx/5);
-		int random_height = maxy/10 + random.nextInt(maxy/5);
-		int random_center_x = maxx/2 + random.nextInt(maxx/5);
-		int random_center_y = maxy/2 + random.nextInt(maxy/5);
+		int random_width = maxx/50 + random.nextInt(maxx/10);
+		int random_height = maxy/25 + random.nextInt(maxy/5);
+		int random_center_x = maxx/2 + random.nextInt(maxx/50);
+		int random_center_y = maxy/2 + random.nextInt(maxy/50);
 		String random_name = RoomNames.values()[random.nextInt(RoomNames.values().length)].toString();
 		
 		Room room = new Room(random_center_x, random_center_y, random_width, random_height, random_name);
