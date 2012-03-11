@@ -124,7 +124,7 @@ public class RoomUtils {
 				Room entryRoom =  getEntryRoom();
 				room.neighbors.put(entryRoom, entryDoor);
 			}
-			else if (room.entryRoom) {
+			else if (room.exitRoom) {
 				Door exitDoor = getRandDoor(room);
 				Room exitRoom =  getExitRoom();
 				room.neighbors.put(exitRoom, exitDoor);

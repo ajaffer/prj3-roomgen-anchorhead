@@ -1,6 +1,5 @@
 package edu.drexel.cs680.proj3.modules;
 
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -9,8 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
+
+import edu.drexel.cs680.proj3.gen.ItemUtils;
 
 public class Room {
 	public int center_x, center_y, width, height;
@@ -304,6 +306,20 @@ public class Room {
 		return null;
 	}
 	
+	public int getRandomX() {
+		Random r = new Random();
+		int x = r.nextInt(width);
+		x += getLeftEdge();
+		return x;
+	}
+	
+	public int getRandomY() {
+		Random r = new Random();
+		int y = r.nextInt(height);
+		y += getTopEdge();
+		return y;
+	}
+	
 	public String toXML() {
 		StringBuilder str = new StringBuilder();
 		str.append(String.format("<room id = \"%s\">", name));
@@ -315,6 +331,7 @@ public class Room {
 			str.append(String.format("%s", character()));
 		}
 		str.append(String.format("%s", locations()));
+		str.append(ItemUtils.getRandomItems(this));
 		str.append("</objects>");
 		str.append("</room>");
 		
