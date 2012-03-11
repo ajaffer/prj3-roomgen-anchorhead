@@ -91,7 +91,7 @@ public class RoomUtils {
 		if (entryRoom != null) {
 			entryRoom.entryRoom = true;
 		}
-		Room exitRoom = getRandomRoomPreculdingGivenRoom(rooms, entryRoom);
+		Room exitRoom = getRoom(rooms, Room.RoomNames.HALL.toString().toLowerCase());
 		if (exitRoom != null) {
 			exitRoom.exitRoom = true;
 		}
@@ -250,24 +250,56 @@ public class RoomUtils {
 		for (int x = 0; x < pointsMatrix.length; x++) {
 			for (int y = 0; y < pointsMatrix[x].length; y++) {
 				Room.Point point = pointsMatrix[x][y];
-				if (pointsMatrix.length == 0 || pointsMatrix[0].length == 0) {
+				if (pointsMatrix.length == 0 || pointsMatrix[0].length == 0 || point == null) {
 					continue;
 				}
 				if (y-1 > 0) {
 					Room.Point top = pointsMatrix[x][y-1];
-					point.links.add(top);
+					if (top!=null) {
+						point.links.add(top);
+					}
 				}
 				if (x-1 > 0) {
 					Room.Point left = pointsMatrix[x-1][y];
-					point.links.add(left);
+					if (left!=null) {
+						point.links.add(left);
+					}
+				}
+				if (x-1 > 0 && y-1 > 0) {
+					Room.Point topLeft = pointsMatrix[x-1][y-1];
+					if (topLeft!=null) {
+						point.links.add(topLeft);
+					}
+				}
+				if (x+1 < pointsMatrix.length && y-1 > 0) {
+					Room.Point topRight = pointsMatrix[x+1][y-1];
+					if (topRight!=null) {
+						point.links.add(topRight);
+					}
 				}
 				if (y+1 < pointsMatrix[0].length) {
 					Room.Point bottom = pointsMatrix[x][y+1];
-					point.links.add(bottom);
+					if (bottom!=null) {
+						point.links.add(bottom);
+					}
 				}
 				if (x+1 < pointsMatrix.length) {
 					Room.Point right = pointsMatrix[x+1][y];
-					point.links.add(right);
+					if (right!=null) {
+						point.links.add(right);
+					}
+				}
+				if (y+1 < pointsMatrix[0].length && x+1 < pointsMatrix.length) {
+					Room.Point bottomRight = pointsMatrix[x+1][y+1];
+					if (bottomRight!=null) {
+						point.links.add(bottomRight);
+					}
+				}
+				if (y+1 < pointsMatrix[0].length && x-1 > 0) {
+					Room.Point bottomLeft = pointsMatrix[x+1][y+1];
+					if (bottomLeft!=null) {
+						point.links.add(bottomLeft);
+					}
 				}
 				
 				room.points.add(point);
@@ -278,14 +310,52 @@ public class RoomUtils {
 	private static Room.Point[][] getPointsMatrix(Room room) {
 		int id = 1;
 		Room.Point[][] points = new Room.Point[room.getRightEdge()-room.getLeftEdge()+1][room.getBottomEdge()-room.getTopEdge()+1];
-		for (int x = room.getLeftEdge(); x <= room.getRightEdge() ; x++) {
-			for (int y = room.getTopEdge(); y <= room.getBottomEdge(); y++) {
-				points[x-room.getLeftEdge()][y-room.getTopEdge()] = room.new Point(id++, x, y);
-			}
+		
+		for (Door doorA : room.neighbors.values()) {
+			for (Door doorB : room.neighbors.values()) {
+				if (doorA.equals(doorB)) {
+					continue;
+				}
+				
+				int yy = (doorB.y - doorA.y);
+				int xx = (doorB.x - doorA.x);
+				double m = yy/xx;
+				int c = doorA.y;
+				
+				for (int i = Math.min(doorB.x, doorA.x); i < Math.max(doorB.x, doorA.x); i++){
+					int x = i;
+					int y = (int) ((m*x) + c);
+					int ii = x-room.getLeftEdge();
+					int jj = y-room.getTopEdge();
+					try {
+						points[ii][jj] = room.new Point(id++, x, y);
+					}catch (IndexOutOfBoundsException e) {
+						System.err.println(e.getMessage());
+						System.err.println(String.format("yy%d/xx%d/m%f/c%d/x%d/y%d/ii%d/jj%d", yy, xx, m, c, x, y, ii ,jj));
+					}
+				}
+			}			
 		}
+		
+		
+//		for (int x = room.getLeftEdge(); x <= room.getRightEdge() ; x++) {
+//			for (int y = room.getTopEdge(); y <= room.getBottomEdge(); y++) {
+//				points[x-room.getLeftEdge()][y-room.getTopEdge()] = room.new Point(id++, x, y);
+//			}
+//		}
 		return points;
 	}
 	
+//	private static Room.Point[][] getPointsMatrix(Room room) {
+//		int id = 1;
+//		Room.Point[][] points = new Room.Point[room.getRightEdge()-room.getLeftEdge()+1][room.getBottomEdge()-room.getTopEdge()+1];
+//		for (int x = room.getLeftEdge(); x <= room.getRightEdge() ; x++) {
+//			for (int y = room.getTopEdge(); y <= room.getBottomEdge(); y++) {
+//				points[x-room.getLeftEdge()][y-room.getTopEdge()] = room.new Point(id++, x, y);
+//			}
+//		}
+//		return points;
+//	}
 	
 	private static Door getDoor(Room a, Room b) {
 		int x=0, y=0;
