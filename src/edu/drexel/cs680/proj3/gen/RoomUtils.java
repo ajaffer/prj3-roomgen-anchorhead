@@ -26,9 +26,9 @@ public class RoomUtils {
 
 	public static List<Room> getRandomRooms(int quantity, int maxx, int maxy) {
 		List<Room> randomRooms = new ArrayList<Room>(quantity);
-		int i = 0;
-		while (i++ < quantity) {
-			Room room = createRandomRoom(maxx, maxy);
+		int i = -1;
+		while (++i < quantity) {
+			Room room = createRandomRoom(maxx, maxy, Room.RoomNames.values()[i].toString().toLowerCase());
 			randomRooms.add(room);
 		}
 		
@@ -86,6 +86,158 @@ public class RoomUtils {
 //		room.doors = doors;
 //	}
 	
+	public static void markEntryExitRooms(List<Room> rooms) {
+		Room entryRoom = getRoom(rooms, Room.RoomNames.LIVINGROOM.toString().toLowerCase());
+		if (entryRoom != null) {
+			entryRoom.entryRoom = true;
+		}
+		Room exitRoom = getRandomRoomPreculdingGivenRoom(rooms, entryRoom);
+		if (exitRoom != null) {
+			exitRoom.exitRoom = true;
+		}
+	}
+	
+	private static Room getRandomRoomPreculdingGivenRoom(List<Room> rooms, Room givenRoom) {
+		Room randomRoom = givenRoom;
+		Random rand = new Random();
+		while (randomRoom == givenRoom) {
+			randomRoom = rooms.toArray(new Room[0])[rand.nextInt(rooms.size())];
+		}
+		
+		return randomRoom;
+	}
+	
+	private static Room getRoom(List<Room> rooms, String roomType) {
+		for (Room room : rooms) {
+			if (room.name.equalsIgnoreCase(roomType)) {
+				return room; 
+			}
+		}
+		return null;
+	}
+	
+	public static void createEntryExitDoors(List<Room> rooms) {
+		for (Room room : rooms) {
+			if (room.entryRoom) {
+				Door entryDoor = getRandDoor(room);
+				Room entryRoom =  getEntryRoom();
+				room.neighbors.put(entryRoom, entryDoor);
+			}
+			else if (room.entryRoom) {
+				Door exitDoor = getRandDoor(room);
+				Room exitRoom =  getExitRoom();
+				room.neighbors.put(exitRoom, exitDoor);
+			}
+		}
+	}
+	
+	private static Room getEntryRoom() {
+		Room room = new Room(0, 0, 0, 0, Room.ENTRY_ROOM);
+		room.description = "The main street of Anchorhead.";
+		return room;
+	}
+	
+	private static Room getExitRoom() {
+		Room room = new Room(0, 0, 0, 0, Room.EXIT_ROOM);
+		room.description = "The nice backyard of Verlag Mansion.";
+		return room;
+	}
+	
+	private static Door getRandDoor(Room room) {
+		Door randDoor = getDoorWhenEmptyWall(room);
+		if (randDoor == null) {
+			randDoor = findDoorBWNeighbors(room);
+		}
+		
+		if (randDoor == null) {
+			System.out.println("Could not find a door! for room: " + room);
+		}
+		return randDoor;
+	}
+	
+	private static Door findDoorBWNeighbors(Room room) {
+		Door door = null;
+		
+		Room neighbor = room.getLeftNeighbor();
+		if (neighbor.getBottomEdge() < room.getBottomEdge()) {
+			int y = neighbor.getBottomEdge() + (room.getBottomEdge() - neighbor.getBottomEdge()) / 2;
+			int x = room.getLeftEdge();
+			door = new Door(x, y);
+		} else if (neighbor.getTopEdge() > room.getTopEdge()) {
+			int y = room.getTopEdge() + (neighbor.getTopEdge() - room.getTopEdge()) / 2;
+			int x = room.getLeftEdge();
+			door = new Door(x, y);
+		}
+		
+		if (door == null) {
+			neighbor = room.getRightNeighbor();
+			if (neighbor.getBottomEdge() < room.getBottomEdge()) {
+				int y = neighbor.getBottomEdge() + (room.getBottomEdge() - neighbor.getBottomEdge()) / 2;
+				int x = room.getRightEdge();
+				door = new Door(x, y);
+			} else if (neighbor.getTopEdge() > room.getTopEdge()) {
+				int y = room.getTopEdge() + (neighbor.getTopEdge() - room.getTopEdge()) / 2;
+				int x = room.getRightEdge();
+				door = new Door(x, y);
+			}
+		}
+		
+		if (door == null) {
+			neighbor = room.getTopNeighbor();
+			if (neighbor.getLeftEdge() > room.getLeftEdge()) {
+				int y = room.getTopEdge();
+				int x = room.getLeftEdge() + (neighbor.getLeftEdge() - room.getLeftEdge()) / 2;
+				door = new Door(x, y);
+			} else if (neighbor.getRightEdge() < room.getRightEdge()) {
+				int y = room.getTopEdge();
+				int x = neighbor.getRightEdge() + (room.getRightEdge() - neighbor.getRightEdge()) / 2;
+				door = new Door(x, y);
+			}
+		}
+
+		if (door == null) {
+			neighbor = room.getBottomNeighbor();
+			if (neighbor.getLeftEdge() > room.getLeftEdge()) {
+				int y = room.getBottomEdge();
+				int x = room.getLeftEdge() + (neighbor.getLeftEdge() - room.getLeftEdge()) / 2;
+				door = new Door(x, y);
+			} else if (neighbor.getRightEdge() < room.getRightEdge()) {
+				int y = room.getBottomEdge();
+				int x = neighbor.getRightEdge() + (room.getRightEdge() - neighbor.getRightEdge()) / 2;
+				door = new Door(x, y);
+			}
+		}
+		
+
+		return door;
+	}
+	
+	private static Door getDoorWhenEmptyWall(Room room){
+		Door randDoor = null;
+		if (room.getRightNeighbor() == null ){
+			int x = room.getRightEdge();
+			int y = room.getTopEdge() + (room.getBottomEdge() - room.getTopEdge())/2;
+			randDoor = new Door(x , y);
+			return randDoor;
+		} else if (room.getLeftNeighbor() == null ){
+			int x = room.getLeftEdge();
+			int y = room.getTopEdge() + (room.getBottomEdge() - room.getTopEdge())/2;
+			randDoor = new Door(x , y);
+			return randDoor;
+		} else if (room.getTopNeighbor() == null ){
+			int x = room.getLeftEdge() + (room.getRightEdge() - room.getLeftEdge())/2;
+			int y = room.getTopEdge();
+			randDoor = new Door(x , y);
+			return randDoor;
+		} else if (room.getBottomNeighbor() == null ){
+			int x = room.getLeftEdge() + (room.getRightEdge() - room.getLeftEdge())/2;
+			int y = room.getBottomEdge();
+			randDoor = new Door(x , y);
+			return randDoor;
+		}
+		
+		return randDoor;
+	}
 	
 	public static void setPoints(List<Room> rooms) {
 		for (Room room : rooms) {
@@ -365,24 +517,23 @@ public class RoomUtils {
 //		return topLeftBottomRight;
 //	}
 	
-	private static enum RoomNames {LIVINGROOM, BEDROOM, BASEMENT, HALL};
 	
-	private static Room createRandomRoom(int maxx, int maxy) {
+	private static Room createRandomRoom(int maxx, int maxy, String name) {
 		Random random = new Random();
 		
-		int random_width = maxx/50 + random.nextInt(maxx/10);
-		int random_height = maxy/25 + random.nextInt(maxy/5);
+		int random_width = maxx/12 + random.nextInt(maxx/4);
+		int random_height = maxy/12 + random.nextInt(maxy/4);
 		int random_center_x = maxx/2 + random.nextInt(maxx/50);
 		int random_center_y = maxy/2 + random.nextInt(maxy/50);
-		String random_name = RoomNames.values()[random.nextInt(RoomNames.values().length)].toString();
+//		String random_name = Room.RoomNames.values()[random.nextInt(Room.RoomNames.values().length)].toString();
 		
-		Room room = new Room(random_center_x, random_center_y, random_width, random_height, random_name);
+		Room room = new Room(random_center_x, random_center_y, random_width, random_height, name);
 		return room;
 	}
 	
-	public static void main(String[] args) {
-		List<Room> rooms = RoomUtils.getRandomRooms(5, 500, 500);
-		RoomUtils.moveRoomsApart(rooms);
-	}
+//	public static void main(String[] args) {
+//		List<Room> rooms = RoomUtils.getRandomRooms(5, 500, 500);
+//		RoomUtils.moveRoomsApart(rooms);
+//	}
 
 }

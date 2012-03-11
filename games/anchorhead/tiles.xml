@@ -13,41 +13,41 @@
 	  <w>640</w>
 	  <h>512</h>
 	</tile>
-	<tile id = "livingroom">
+	<tile id = "livingroom2">
 	  <img>graphics/mansion-livingroom-background.png</img>
 	  <x>0</x>
 	  <y>0</y>
 	  <w>640</w>
 	  <h>512</h>
 	</tile>
-	<tile id = "livingroom2">
-	  <img>graphics/mansion/livingroom.png</img>
+	<tile id = "livingroom">
+	  <img>graphics/mansion/output/mansion.jpg</img>
 	  <x>0</x>
 	  <y>0</y>
-	  <w>185</w>
-	  <h>189</h>
+	  <w>500</w>
+	  <h>500</h>
 	</tile>
 	<tile id = "hall">
-	  <img>graphics/mansion-hall-background.png</img>
+	  <img>graphics/mansion/output/mansion.jpg</img>
 	  <x>0</x>
 	  <y>0</y>
-	  <w>640</w>
-	  <h>512</h>
+	  <w>500</w>
+	  <h>500</h>
 	</tile>
 	<tile id = "bedroom">
-	  <img>graphics/mansion-bedroom-background.png</img>
+	  <img>graphics/mansion/output/mansion.jpg</img>
 	  <x>0</x>
 	  <y>0</y>
-	  <w>640</w>
-	  <h>512</h>
+	  <w>500</w>
+	  <h>500</h>
 	</tile>
-	<!--tile id = "basement">
-	  <img>graphics/mansion-basement-background.png</img>
+	<tile id = "basement">
+	  <img>graphics/mansion/output/mansion.jpg</img>
 	  <x>0</x>
 	  <y>0</y>
-	  <w>640</w>
-	  <h>512</h>
-	</tile-->
+	  <w>500</w>
+	  <h>500</h>
+	</tile>
 	<tile id = "backyard">
 	  <img>graphics/mansion-backyard-background.png</img>
 	  <x>0</x>
