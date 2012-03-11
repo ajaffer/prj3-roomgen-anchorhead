@@ -16,26 +16,24 @@ public class ImageUtil {
 	private static final String FOLDER = new File(".").getAbsolutePath();
 	
 	public static void drawMansion(Mansion mansion) throws IOException {
-		File roomFile = new File(String.format("%s\\graphics\\mansion\\livingroom.png", FOLDER));
-		BufferedImage roomImage = ImageIO.read(roomFile);
-		
 		BufferedImage mansionImage = new BufferedImage (
 				mansion.width,
 				mansion.height,
 				BufferedImage.TYPE_INT_RGB);
 		
 		for (Room room : mansion.rooms) {
-			Shape rectangle = new Rectangle(room.getLeftEdge(), room.getTopEdge(), room.width, room.height);
+			/*Shape rectangle = new Rectangle(room.getLeftEdge(), room.getTopEdge(), room.width, room.height);
 			mansionImage.createGraphics().draw(rectangle);
 			mansionImage.createGraphics().drawString(room.toString(), room.center_x, room.center_y);
-			for (Door door : room.doors) {
-				mansionImage.createGraphics().drawString(String.format("X"), door.x, door.y);
-			}
+//			for (Door door : room.doors) {
+//				mansionImage.createGraphics().drawString(String.format("X"), door.x, door.y);
+//			}
 //			mansionImage.createGraphics().drawString("moved: "+room.moveCounter, room.center_x, room.center_y+20);
 //			mansionImage.createGraphics().drawString("collission: "+RoomUtils.noOfCollisions(mansion.rooms, room), room.center_x, room.center_y+40);
+			*/
 			
-//			boolean image1Drawn = mansionImage.createGraphics().drawImage(roomImage, room.getLeftEdge(), room.getTopEdge(), room.width, room.height, null);
-//			if(!image1Drawn) System.out.println("Problems drawing room " + room.name); 
+			boolean image1Drawn = mansionImage.createGraphics().drawImage(room.image, room.getLeftEdge(), room.getTopEdge(), room.width, room.height, null);
+			if(!image1Drawn) System.out.println("Problems drawing room " + room.name); 
 		}
 		
 		  File mansionFile = new File(String.format("%s\\graphics\\mansion\\output\\mansion.jpg", FOLDER));

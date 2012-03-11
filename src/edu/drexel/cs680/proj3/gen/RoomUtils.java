@@ -1,5 +1,6 @@
 package edu.drexel.cs680.proj3.gen;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -132,13 +133,15 @@ public class RoomUtils {
 	}
 	
 	private static Room getEntryRoom() {
-		Room room = new Room(0, 0, 0, 0, Room.ENTRY_ROOM);
+		Room room = null;
+		room = new Room(0, 0, 0, 0, Room.ENTRY_ROOM);
 		room.description = "The main street of Anchorhead.";
 		return room;
 	}
 	
 	private static Room getExitRoom() {
-		Room room = new Room(0, 0, 0, 0, Room.EXIT_ROOM);
+		Room room = null;
+		room = new Room(0, 0, 0, 0, Room.EXIT_ROOM);
 		room.description = "The nice backyard of Verlag Mansion.";
 		return room;
 	}
@@ -597,7 +600,8 @@ public class RoomUtils {
 		int random_center_y = maxy/2 + random.nextInt(maxy/50);
 //		String random_name = Room.RoomNames.values()[random.nextInt(Room.RoomNames.values().length)].toString();
 		
-		Room room = new Room(random_center_x, random_center_y, random_width, random_height, name);
+		Room room = null;
+		room = new Room(random_center_x, random_center_y, random_width, random_height, name);
 		return room;
 	}
 	

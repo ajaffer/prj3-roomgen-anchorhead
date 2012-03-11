@@ -1,11 +1,16 @@
 package edu.drexel.cs680.proj3.modules;
 
 import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.imageio.ImageIO;
 
 public class Room {
 	public int center_x, center_y, width, height;
@@ -14,13 +19,14 @@ public class Room {
 	public String description;
 //	public List<Room> neighbors = new ArrayList<Room>();
 	public Map<Room, Door> neighbors = new HashMap<Room, Door>();
-	public List<Door> doors = new ArrayList<Door>();
+//	public List<Door> doors = new ArrayList<Door>();
 	public List<Room> processedNeighbors;
 	public List<Point> points;
 	private static int ctr;
 	public int id;
 	public boolean entryRoom;
 	public boolean exitRoom;
+	public BufferedImage image;
 	
 	public static enum RoomNames {LIVINGROOM, BEDROOM, BASEMENT, HALL};
 	
@@ -33,6 +39,7 @@ public class Room {
 		this.width = width;
 		this.height = height;
 		this.name = name.toLowerCase();
+		this.image = createImage();
 		id = ctr++;
 		processedNeighbors = new ArrayList<Room>();
 		points = new ArrayList<Point>();
@@ -40,6 +47,19 @@ public class Room {
 	
 	public boolean collides(Room other) {
 		return collision(this, other) || collision(other, this);
+	}
+	
+	private BufferedImage createImage(){
+		String FOLDER = new File(".").getAbsolutePath();
+		File file = new File(String.format("%s\\graphics\\mansion\\%s.png", FOLDER, name));
+		BufferedImage image = null;
+		try {
+			image = ImageIO.read(file);
+		} catch (IOException e) {
+			System.out.println(file);
+			e.printStackTrace();
+		}
+		return image;
 	}
 	
 	private boolean collision(Room a, Room b) {
@@ -127,7 +147,7 @@ public class Room {
 	}
 	
 	public String toString() {
-		return String.format("%s [%d/%d]", name, neighbors.size(), doors.size());
+		return String.format("%s [%d]", name, neighbors.size());
 	}
 	
 	private String navigation() {
